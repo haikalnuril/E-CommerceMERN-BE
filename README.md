@@ -1,1 +1,1 @@
-# E-CommerceMERN-BE
+# E-commerceMERN
