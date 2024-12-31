@@ -132,8 +132,8 @@ export const callbackPayment = asyncHandler(async (req, res) => {
 
     // Sample transactionStatus handling logic
 
-    if (transactionStatus == "capture") {
-        if (fraudStatus == "accept" || transactionStatus == "settlement") {
+    if (transactionStatus == "capture" || transactionStatus == "settlement") {
+        if (fraudStatus == "accept") {
             // TODO set transaction status on your database to 'success'
             // and response with 200 OK
             const orderProduct = orderData.itemsDetail
