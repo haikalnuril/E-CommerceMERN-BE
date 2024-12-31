@@ -24,16 +24,24 @@ export const allProducts = asyncHandler(async (req, res) => {
     excludedFields.forEach((el) => delete queryObj[el]);
 
     let query;
+    let countQuery;
 
-    if (req.query.name) {
-        query = product.find({
+    if ("name" in req.query) {
+        const nameRegex = {
             name: {
                 $regex: req.query.name,
                 $options: "i",
             },
+        };
+        query = product.find({
+            ...queryObj,
+            ...nameRegex,
         });
+
+        countQuery = { ...queryObj, ...nameRegex };
     } else {
         query = product.find(queryObj);
+        countQuery = queryObj;
     }
 
     //pagination
@@ -43,7 +51,7 @@ export const allProducts = asyncHandler(async (req, res) => {
 
     query = query.skip(skipData).limit(limitData);
 
-    const totalData = await product.countDocuments();
+    let totalData = await product.countDocuments(countQuery);
     if (req.query.page) {
         if (skipData >= totalData) {
             throw new Error("This page does not exist");
@@ -51,12 +59,17 @@ export const allProducts = asyncHandler(async (req, res) => {
     }
 
     const data = await query;
+    const totalPage = Math.ceil(totalData / limitData);
 
     res.status(200).json({
         status: "success",
         message: "All products",
         data,
-        count: totalData,
+        pagination: {
+            totalPage,
+            page,
+            totalProduct: totalData,
+        },
     });
 });
 
@@ -73,9 +86,7 @@ export const detailProduct = asyncHandler(async (req, res) => {
     res.status(200).json({
         status: "success",
         message: "Product detail",
-        data: {
-            product: productDetail,
-        },
+        data: productDetail,
     });
 });
 
