@@ -40,7 +40,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         const shortName = name.substring(0, 30);
         const singleProductMidtrans = {
             quantity: cart.quantity,
-            name : shortName,
+            name: shortName,
             price,
             id: _id,
         };
@@ -63,7 +63,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     let parameter = {
         transaction_details: {
             order_id: order._id,
-            gross_amount: total
+            gross_amount: total,
         },
         item_details: orderMidtrans,
         customer_details: {
@@ -81,7 +81,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         order,
         status: "success",
         message: "Product created successfully",
-        token
+        token,
     });
 });
 
@@ -113,4 +113,65 @@ export const currentOrder = asyncHandler(async (req, res) => {
         message: "Current order",
         data: order,
     });
+});
+
+export const callbackPayment = asyncHandler(async (req, res) => {
+    const statusResponse = await snap.transaction.notification(req.body);
+
+    let orderId = statusResponse.order_id;
+    let transactionStatus = statusResponse.transaction_status;
+    let fraudStatus = statusResponse.fraud_status;
+
+    const orderData = await Order.findById(orderId);
+
+    if (!orderData) {
+        res.status(404);
+        throw new Error("Order not found");
+        
+    }
+
+    // Sample transactionStatus handling logic
+
+    if (transactionStatus == "capture") {
+        if (fraudStatus == "accept" || transactionStatus == "settlement") {
+            // TODO set transaction status on your database to 'success'
+            // and response with 200 OK
+            const orderProduct = orderData.itemsDetail
+
+            for (const itemProduct of orderProduct) {
+                const productData = await Product.findById(itemProduct.product)
+
+                if (!productData) {
+                    res.status(404);
+                    throw new Error("Product not found");
+                }
+
+                productData.stock -= itemProduct.quantity
+
+                await productData.save()
+                
+            }
+
+            orderData.status = "success"
+
+        }
+    } else if (
+        transactionStatus == "cancel" ||
+        transactionStatus == "deny" ||
+        transactionStatus == "expire"
+    ) {
+        // TODO set transaction status on your database to 'failure'
+        // and response with 200 OK
+
+        orderData.status = "failed"
+    } else if (transactionStatus == "pending") {
+        // TODO set transaction status on your database to 'pending' / waiting payment
+        // and response with 200 OK
+
+        orderData.status = "pending"
+    }
+
+    await orderData.save();
+
+    return res.status(200).send("Payment Notif Success")
 });
