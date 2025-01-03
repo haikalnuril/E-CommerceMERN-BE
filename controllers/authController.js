@@ -20,7 +20,7 @@ const createSendResToken = (user, statusCode, res) => {
             Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60 * 1000
         ),
         httpOnly: true,
-        security: isDev,
+        secure: isDev,
     };
 
     res.cookie("jwt", token, cookieOptions);
