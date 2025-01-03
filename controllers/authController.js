@@ -16,7 +16,7 @@ const createSendResToken = (user, statusCode, res) => {
     const isDev = process.env.NODE_ENV === "development" ? false : true;
 
     const cookieOptions = {
-        expire: new Date(
+        expires: new Date(
             Date.now() + 24 * 60 * 60 * 1000
         ),
         httpOnly: true,
