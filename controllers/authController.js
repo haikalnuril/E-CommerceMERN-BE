@@ -17,12 +17,10 @@ const createSendResToken = (user, statusCode, res) => {
 
     const cookieOptions = {
         expire: new Date(
-            Date.now() + 24 * 60 * 60 * 1000
+            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60 * 1000
         ),
         httpOnly: true,
-        secure: isDev,
-        sameSite: "none",
-        path: "/",
+        security: isDev,
     };
 
     res.cookie("jwt", token, cookieOptions);
@@ -90,9 +88,6 @@ export const logoutUser = async (req, res) => {
     res.cookie("jwt", "", {
         httpOnly: true,
         expires: new Date(Date.now()),
-        secure: true,
-        sameSite: 'none',
-        path: '/',
     });
 
     res.status(200).json({
