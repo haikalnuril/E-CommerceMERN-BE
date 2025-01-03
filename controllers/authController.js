@@ -15,10 +15,11 @@ const createSendResToken = (user, statusCode, res) => {
 
     const isDev = process.env.NODE_ENV === "development" ? false : true;
 
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + (process.env.JWT_COOKIE_EXPIRES_IN * 1));
+
     const cookieOptions = {
-        expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60 * 1000
-        ),
+        expires: expirationDate,
         httpOnly: true,
         secure: isDev,
     };
