@@ -21,7 +21,8 @@ const createSendResToken = (user, statusCode, res) => {
         ),
         httpOnly: true,
         secure: isDev,
-        domain: "uriel-e-commerce.vercel.app",
+        sameSite: "none",
+        path: "/",
     };
 
     res.cookie("jwt", token, cookieOptions);
@@ -89,6 +90,9 @@ export const logoutUser = async (req, res) => {
     res.cookie("jwt", "", {
         httpOnly: true,
         expires: new Date(Date.now()),
+        secure: true,
+        sameSite: 'none',
+        path: '/',
     });
 
     res.status(200).json({
