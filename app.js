@@ -15,7 +15,9 @@ const port = 3000;
 app.use(cors(
     {
         origin: "https://uriel-e-commerce.vercel.app",
-        credentials: true
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     }
 ));
 app.use(express.json());
