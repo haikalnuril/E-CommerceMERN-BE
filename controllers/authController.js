@@ -16,11 +16,11 @@ const createSendResToken = (user, statusCode, res) => {
     const isDev = process.env.NODE_ENV === "development" ? false : true;
 
     const cookieOptions = {
-        expires: new Date(
+        expire: new Date(
             Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60 * 1000
         ),
         httpOnly: true,
-        secure: isDev,
+        security: isDev,
         sameSite: "none",
         path: "/",
     };
