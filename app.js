@@ -12,6 +12,7 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
+app.use(cookieParser());
 app.use(cors(
     {
         origin: "https://uriel-e-commerce.vercel.app",
@@ -23,7 +24,6 @@ app.use(cors(
 app.use(express.json());
 app.use(helmet());
 app.use(ExpressMongoSanitize());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 
