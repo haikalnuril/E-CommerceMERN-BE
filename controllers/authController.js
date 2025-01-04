@@ -22,7 +22,6 @@ const createSendResToken = (user, statusCode, res) => {
         httpOnly: true,
         secure: isDev,
         sameSite: "none",
-        domain: "uriel-e-commerce.vercel.app",
         path: "/",
     };
 
